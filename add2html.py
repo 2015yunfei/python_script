@@ -1,5 +1,6 @@
 import os
 
+
 def copy_and_paste():
     # 获取当前目录
     current_directory = os.getcwd()
@@ -22,6 +23,8 @@ def copy_and_paste():
                 html_file.seek(0)
                 html_file.truncate()
                 html_file.write("".join(lines))
+            print(f"{filename}已经修改完成")
+
 
 if __name__ == "__main__":
     copy_and_paste()

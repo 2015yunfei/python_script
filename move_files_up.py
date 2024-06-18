@@ -20,5 +20,16 @@ def move_files_up():
                 print(f"Moved {source_file} to {destination_file}")
 
 
+def delete_empty_folders(root_folder):
+    # 遍历目录下的所有文件和文件夹
+    for folder_name, subfolders, files in os.walk(root_folder):
+        # 检查文件夹是否为空
+        if not subfolders and not files:
+            # 删除空文件夹
+            os.rmdir(folder_name)
+            print(f"已删除空文件夹：{folder_name}")
+
+
 if __name__ == "__main__":
     move_files_up()
+    delete_empty_folders(".")

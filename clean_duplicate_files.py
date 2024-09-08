@@ -1,14 +1,14 @@
 """
-这段代码的作用是扫描指定目录及其所有子目录，查找并删除重复的文件。它会比较文件的大小，如果发现多个文件大小相同，就会保留文件名最短的一个，
-将其他重复的文件移动到回收站。最后，代码会统计并显示总共删除的文件大小，以GB为单位，帮助用户释放存储空间并整理文件。
+这段代码的作用是扫描指定目录及其所有子目录，查找并删除重复的文件。
+它会比较文件的大小，如果发现多个文件大小相同，就会保留文件名最短的一个，
+将其他重复的文件移动到回收站。
+最后，代码会统计并显示总共删除的文件大小，以GB为单位.
 """
 import os
 import send2trash
 
 
-def find_duplicate_files(directory):
-    # 创建一个字典来保存文件大小及其对应的文件名列表
-    file_size_dict = {}
+def find_duplicate_files(directory, file_size_dict):
     total_deleted_size = 0  # 用于记录总共删除的文件大小
 
     # 遍历当前目录下的所有文件
@@ -44,12 +44,15 @@ def find_duplicate_files(directory):
 
 
 if __name__ == "__main__":
+    # 创建一个字典来保存文件大小及其对应的文件名列表
+    file_size_dict = {}
+
     current_directory = os.getcwd()
     total_deleted_gb = 0  # 用于记录总共删除的文件大小（GB）
 
     # 处理当前目录
     print("当前遍历的目录:", current_directory)
-    total_deleted_gb += find_duplicate_files(current_directory) / (1024 ** 3)
+    total_deleted_gb += find_duplicate_files(current_directory, file_size_dict) / (1024 ** 3)
 
     # 遍历当前目录下的所有子文件夹
     for root, dirs, files in os.walk(current_directory):
@@ -59,7 +62,7 @@ if __name__ == "__main__":
             print()
             print("当前遍历的目录:", directory_path)
             print()
-            total_deleted_gb += find_duplicate_files(directory_path) / (1024 ** 3)
+            total_deleted_gb += find_duplicate_files(directory_path, file_size_dict) / (1024 ** 3)
 
     # 输出总共清除的文件大小
     print()

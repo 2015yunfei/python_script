@@ -6,6 +6,29 @@ import json
 import send2trash
 
 
+def count_files_in_directory(directory):
+    count = 0
+    for root, dirs, files in os.walk(directory):
+        count += len(files)
+    return count
+
+
+def remove_empty_dirs(path):
+    # 遍历当前目录下的所有文件和文件夹
+    for subfolder in os.listdir(path):
+        # 构造完整的文件路径
+        subfolder_path = os.path.join(path, subfolder)
+        # 如果是文件夹，则递归调用
+        if os.path.isdir(subfolder_path):
+            remove_empty_dirs(subfolder_path)
+
+    # 检查当前目录是否为空
+    if not os.listdir(path):
+        # 如果为空，则删除该目录
+        os.rmdir(path)
+        print(f"删除空文件夹: {path}")
+
+
 def calculate_sha1(file_path):
     sha1_hash = hashlib.sha1()
     with open(file_path, "rb") as f:
@@ -19,11 +42,13 @@ def get_file_type(file_path):
     return os.path.splitext(file_path)[1]
 
 
-def recursive_file_list(directory):
+def recursive_file_list(directory, tot):
     files_json = []
     files_sha1_dict = {}
+    number = 0
     for root, dirs, files in os.walk(directory):
         for file in files:
+            number += 1
             file_path = os.path.join(root, file)
             sha1_value = calculate_sha1(file_path)
             file_type = get_file_type(file)
@@ -43,16 +68,23 @@ def recursive_file_list(directory):
                     "file_type": file_type,
                     "sha1": sha1_value
                 })
+                print("当前文件：%s  SHA-1：%s" % (file, sha1_value))
+            print("%d/%d" % (number, tot))
     return files_json
 
 
 if __name__ == "__main__":
-    # 递归遍历当前目录，构建字典，并写入json文件
+    # 计算当前文件夹及其子文件夹中的文件数量
     current_directory = '.'  # '.' 表示当前目录
-    json_sha1 = recursive_file_list(current_directory)
+    file_count = count_files_in_directory(current_directory)
+
+    # 递归遍历当前目录，构建字典，并写入json文件
+    json_sha1 = recursive_file_list(current_directory, file_count)
 
     with open('files_sha1.json', 'w') as json_file:
         json.dump(json_sha1, json_file, indent=4)
+
+    remove_empty_dirs(current_directory)
 
 # import os
 # import hashlib
